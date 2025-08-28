@@ -26,14 +26,14 @@
         var type_1 = [[{"U_1_Q_1": "U_1_A_1"}],[{"U_2_Q_1" : "U_2_A_1"}]]
         var type_1_1 = jQuery.merge(type_1[0], type_1[1]);
         // need to use ["key"] notation becuase user input will be string data
-        $("#log").append(type_1_1[1]["U_2_Q_1"]);
+       // $("#log").append(type_1_1[1].U_2_Q_1);
         // $("#log").append(type_1_1[1].U_2_Q_1);
 
         // Data structure option 2:
         var type_2 = [{"Unit_1" : [{"U_1_Q_1": "U_1_A_1"}]},
                       {"Unit_2" : [{"U_2_Q_1" : "U_2_A_1"}]}]
-        var type_2_1 = jQuery.merge(type_2[1].Unit_2);
-        $("#log2").append(type_2_1[1]["U_2_Q_1"]);
+        var type_2_1 = $("#log2").append(type_2[1]["Unit_2"]["U_2_Q_1"]);
+        
         
 
 
