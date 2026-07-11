@@ -1,0 +1,305 @@
+<html>
+    <head>
+        <title>SAT Words</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="style.css">
+    </head>    
+    <body>
+        <div class="controll">
+            <div id="input" class="controll-content">
+            </div>
+            <button id="submit" class="controll-content">Submit</button>
+            <p id="score" class="controll-content">Score: 0</p>
+            <p id="feedback" class="controll-content"></p>
+            <button id="correct" class="controll-content">My answer was correct</button>
+            <button id="cont" class="controll-content">Continue</button>
+            <button id="hard" class="controll-content">Hard Mode</button>
+        </div>
+        <div class="container">
+            <div class="content" id="word">
+                <div class="header" id="word-header"><h2>Word</h2></div>
+                <div class="question" id="word-question">
+
+                </div>
+            </div>
+            <div class="content" id="definition">
+                <div class="header" id="definition-header"><h2>Definition</h2></div>
+                <div class="question" id="definition-question">
+                    
+                </div>
+            </div>
+            <div class="content" id="example">
+                <div class="header" id="example-header"><h2>Example</h2></div>
+                <div class="question" id="example-question">
+                    
+                </div>
+            </div>
+        </div>    
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        <script>
+            //hiding
+            $("#cont").hide();
+
+
+            // global variables
+            var score = 0;
+            var answer, timer, index ;
+            var running = true;
+            var hard = false;
+            var example
+            
+
+            // Functions
+            
+
+            function randomIndex(){
+                var max = words.length;
+                var randNum = Math.floor(Math.random() * max);
+                return randNum;
+            }
+
+            function show2(){
+                 $("#feedback").text(``);
+                var word, definition, guesstype;
+
+                index = randomIndex();
+                
+                word = words[index].word;
+                definition = words[index].definition;
+                
+                example = words[index].example;
+                
+                randNum = Math.floor(Math.random() * 2)
+                // start ifs
+                if (randNum == 0){
+                    $("#word-question").hide();
+                    $("#definition-question").show();
+                    $("#example-question").show();
+                    answer = word;
+                    guesstype = "word";
+                }
+                else if (randNum == 1){
+                    $("#definition-question").hide();
+                    $("#word-question").show();
+                    $("#example-question").show();
+                    answer = definition;
+                    guesstype = "definition";
+                }
+                else if (randNum == 2){
+                    // intentionaly deactivated because user can not guess exact sentence
+                    // can be reactiavted by changing the number after the '*' in the line in show2 defining randNum to 3
+                    // reactivate for other three-way term sets
+                    $("#example-question").hide();
+                    $("#word-question").show();
+                    $("#definition-question").show();
+                    answer = example;
+                    guesstype = "example";
+                }
+                // end ifs
+                $("#word-question").text(word);
+                $("#definition-question").text(definition);
+                if (hard==false){
+                    $("#example-question").text(example);
+                }
+                inputHTML = `<input
+                id="user-answer"
+                type="text"
+                placeholder="Enter a ${guesstype}">`;
+                $("#input").text("");
+                $("#input").append(inputHTML);
+                
+                
+                
+                
+            }
+
+            function correct(){
+                incorrect()
+                score++
+                $("#score").text(`Score: ${score} `);
+                $("#feedback").text("Correct!");
+                words.splice(index, 1);
+                if (words.length == 0){
+                    running = false
+                }
+                else {
+                    show2();
+                }
+            }
+
+            function incorrect(){
+                clearTimeout(timer);
+                $("#correct").off();
+                $("#correct").hide();
+                $("#cont").off();
+                $("#cont").hide();
+
+                
+            }
+
+            function incorrectRun(){
+                clearTimeout(timer);
+                $("#correct").off();
+                $("#correct").hide();
+                $("#cont").off();
+                $("#cont").hide();
+                show2();
+                
+            }
+
+            function checkAns(){
+                incorrect();
+                var userAnswer = $("#user-answer").val();
+                if (userAnswer.toLowerCase() == answer.toLowerCase()){
+                    correct();
+                    
+                    
+
+
+                }
+                else {
+                    $("#feedback").text(`Incorrect! The correct answer was: ${answer}`);
+                    timer = setTimeout(incorrectRun, 7000);
+                    $("#correct").show();
+                    $("#correct").click(correct);
+                    $("#cont").show();
+                    $("#cont").click(incorrectRun);
+                    
+                    
+
+
+                }
+                if (running == false){
+                    end();
+                    return "end-called"
+
+                }
+                
+            }
+
+            function end(){
+                $("#submit").off();
+                $("#word-question").show();
+                $("#definition-question").show();
+                $("#example-question").show();
+                $("#feedback").text(`Congratulations, you finished! Refresh to play again.`);
+            }
+
+            function  hardOn(){
+                if (hard == false){
+                    hard = true
+                    $("#example-question").text("HARD MODE ACTIVATED");
+
+                }
+                else{
+                    hard = false
+                    $("#example-question").text(example);
+                }    
+            }
+
+
+
+
+
+            // Data
+            var words = [//{word: "Repudiate", definition: "Refuse to accept/ associate", example: "I always BLANK strange clubs or events that could get me in trouble."},
+                     //   {word: "Adamant", definition: "Extreamly stubborn, fixed mindset/ perspective", example: "I am BLANK about being able to play videogames on the weekand."},
+                      //  {word: "Impervious", definition: "Immune, not affected by", example: "I am BLANK to some diseases because I have been given the cure."},
+                      //  {word: "Prodigious", definition: "Impressively Large", example: "The Empire State Building is very BLANK because of its height."},
+                      //  {word: "Impetuous", definition: "Doing something without considering the consequences", example: "Jeff BLANK tryed to balance chocolate milk on his head and ended up spilling it all over himself."},
+                      //  {word: "Paucity", definition: "A small amount, usually refers to a shortage of an item", example: "During Covid-19, there was a BLANK of basic items that were necccesary in evry day life."},
+                      //  {word: "Superfluous", definition: "Too much, an excessive amount", example: "The best time to buy cars is when the dealerships have a BLANK amount of them on the lot and need to get rid of them."},
+                     //   {word: "Conjecture", definition: "Guessing or making a claim without sufficent evidence, a conclusion based on SURMISE (guesswork)", example: "Scientests usually do experiments to test their BLANK."},
+                     //   {word: "Presupposition", definition: "A prediction, an idea assumed beforehand about a subject", example: "I had a BLANK that the protaginist would die in the last scene of the movie."},
+                     //   {word: "Bolster", definition: "Usally an object, argument, claim, or bodypart", example: "I always try to BLANK the advance that videogames has posative effects."},
+                     //   {word: "Corroborate", definition: "To confirm or support a claim", example: "The witness could BLANK the lawyers claim that the victim was not murdered as they saw the whole situation with their own eyes."},
+                     //   {word: "Concede", definition: "To admit an opposing claim is true or valid", example: "I BLANK to the claim that there are some negatives to playing videogames"},
+                     //   {word: "Unkempt", definition: "Untidy, messy, sloppy, disheveled", example: "When I eat, I spill a lot of food which makes the area I ate in look BLANK."},
+                      //  {word: "Proponent", definition: "A person who supports a claim or course of action", example: "I have many well acomplished scientests with prodigous amounts of accolades as BLANK for my claim regarding videogames."},
+                     //   {word: "Detractor", definition: "A person who criticizes a claim or course of action", example: "We had a completely free day, so I proposed a plan of things to do only to be immediately BLANK, so we did nothing."},
+                     //   {word: "Advantageous", definition: "Creating favorable circumstances", example: "I put myself in an advantageous posistion to ask my parents to let me play videogames by being nice and helpful, so they were in a good mood."},
+                     //   {word: "Impede", definition: "to delay or prevent something or someone by obstructing them/ it", example: "The cap on my water bottle BLANK me from spilling."},
+                    //    {word: "Countermand", definition: "to revoke/ recind/ undo an order", example: "The coach told us to do pushups, but we were very tired and hoped the coach would notice and BLANK the order."},
+                        // GPT
+                       {word: "Opulent", definition: "exhibiting great wealth, abundance, or luxury", example: "The royal palace was so BLANK that visitors were left speechless."},
+                       {word: "Dismayed", definition: "experiencing feelings of alarmed concern, upset, or disappointment due to something unexpected", example: "She was BLANK to find out the concert had been canceled."},
+                       {word: "Folly", definition: "a lack of good sense or normal prudence; a foolish act or idea", example: "Investing all his savings in that scheme proved to be sheer BLANK."},
+                       {word: "Concomitant", definition: "accompanying or occurring alongside something else", example: "Rapid urban growth often brings BLANK problems like traffic and pollution."},
+                       {word: "Sollace", definition: "to give comfort or consolation in grief or distress", example: "Music was her only BLANK during hard times."},
+                       {word: "Monotony", definition: "tedious sameness or lack of variety", example: "He quit his job because the BLANK was driving him mad."},
+                       {word: "Incuriously", definition: "in a manner showing no interest or desire to know", example: "They listened BLANK and asked no questions."},
+                       {word: "Despondency", definition: "a state of low spirits caused by loss of hope or courage", example: "After the defeat, the team sank into BLANK."},
+                       {word: "Toil", definition: "to work extremely hard or incessantly", example: "Farmers BLANK in the fields from dawn till dusk."},
+                       {word: "Anthropogenic", definition: "originating in human activity, especially regarding environmental change", example: "BLANK emissions are a major factor in climate change."},
+                       {word: "Superficial", definition: "existing or occurring at or on the surface; lacking depth", example: "His understanding of the topic was BLANK at best."},
+                       {word: "Incarcerated", definition: "imprisoned or confined", example: "He spent ten years BLANK for a crime he didn't commit."},
+                       {word: "Vilifying", definition: "speaking or writing about someone in an abusively disparaging manner", example: "The article was accused of BLANK the mayor without evidence."},
+                       {word: "Lackadaisical", definition: "lacking enthusiasm, energy, or determination; carelessly lazy", example: "His BLANK attitude towards studying cost him a passing grade."},
+                       {word: "Disgruntled", definition: "angry or dissatisfied", example: "The BLANK employees planned to strike for better conditions."},
+                       {word: "Staunchly", definition: "in a very loyal and committed manner", example: "She defended her friend BLANK against the unfair accusations."},
+                       {word: "Arduous", definition: "involving or requiring strenuous effort; difficult and tiring", example: "Climbing the mountain was an BLANK challenge."},
+                       {word: "Elucidate", definition: "to make something clear; explain", example: "The teacher tried to BLANK the complex theory for the students."},
+                       {word: "Retroactive", definition: "applying to events that have already occurred", example: "The new law will be BLANK to the beginning of the year."},
+                       {word: "Tumult", definition: "a loud, confused noise, especially one caused by a crowd; confusion or disorder", example: "The announcement caused BLANK in the audience."},
+                       {word: "Muddling", definition: "mixing up in a confused way; making something unclear or disorganized", example: "His constant changes kept BLANK the project plans."},
+                       {word: "Flamboyant", definition: "tending to attract attention because of exuberance, confidence, or stylishness", example: "Her BLANK outfit turned heads wherever she went."},
+                       {word: "Embellished", definition: "made more attractive by adding decorative details", example: "The story was BLANK to make it more exciting."},
+                       {word: "Rudimentary", definition: "involving or limited to basic principles; elementary", example: "He has only a BLANK grasp of the language."},
+                       {word: "Ramified", definition: "branched out or divided into branches", example: "The river BLANK into smaller streams."},
+                       {word: "Innervated", definition: "supplied with nerves; stimulated", example: "Each muscle is BLANK by specific nerve fibers."},
+                       {word: "Repudiated", definition: "rejected as untrue or unjust; refused to accept", example: "The candidate BLANK the allegations made against him."},
+                       {word: "Ousted", definition: "removed or expelled from a position or place", example: "The corrupt leader was BLANK by the citizens."},
+                       {word: "Brazen", definition: "bold and without shame", example: "It was a BLANK attempt to lie in front of everyone."},
+                       {word: "Lustrous", definition: "having a gentle sheen or soft glow", example: "Her BLANK hair caught the light beautifully."},
+                       {word: "Demure", definition: "reserved, modest, and shy", example: "She gave him a BLANK smile."},
+                       {word: "Mendacious", definition: "not telling the truth; lying", example: "His BLANK statements damaged his credibility."},
+                       {word: "Inane", definition: "silly or stupid; lacking sense", example: "He always made BLANK comments during meetings."},
+                       {word: "Fractious", definition: "irritable and quarrelsome", example: "The BLANK child refused to sit still."},
+                       {word: "Evanescent", definition: "soon passing out of sight, memory, or existence; fleeting", example: "Youth is BLANK and should be cherished."},
+                       {word: "Nebulous", definition: "in the form of a cloud or haze; vague or ill-defined", example: "His ideas were too BLANK to take seriously."},
+                       {word: "Benign", definition: "gentle and kindly; not harmful", example: "Luckily, the tumor was BLANK and posed no threat."},
+                       {word: "Abominable", definition: "causing moral revulsion; very bad or unpleasant", example: "They committed an BLANK crime."},
+                       {word: "Animate", definition: "bring to life; give inspiration, encouragement, or vigor", example: "His passion helped BLANK the whole team."},
+                       {word: "Inconspicuous", definition: "not clearly visible or attracting attention; modest", example: "He tried to remain BLANK at the party."},
+                       {word: "Enthrall", definition: "capture the fascinated attention of", example: "The performance managed to BLANK the entire audience."},
+                       {word: "Satirize", definition: "criticize with humor, irony, or ridicule", example: "The show aimed to BLANK modern politics."},
+                       {word: "Burgeoning", definition: "beginning to grow or increase rapidly; flourishing", example: "The BLANK tech industry attracts investors."},
+                       {word: "Stymie", definition: "prevent or hinder the progress of", example: "Budget cuts could BLANK the new project."},
+                       {word: "Disseminate", definition: "spread or disperse something widely, especially information", example: "They used social media to BLANK the news quickly."},
+                       {word: "Freeloading", definition: "living by relying on someone else's generosity without sharing in the cost or responsibility", example: "His friends were tired of his constant BLANK and asked him to chip in."},
+
+
+                        // Copy and paste this for new terms but leave this one commented: {word: "", definition: "", example: ""}
+                        // make sure to add a comma in the propper spot when copying and pasting the above
+                        
+                        
+
+                    
+            ];
+            
+  
+
+            // main code
+            incorrect();
+            show2();
+            $("#submit").click(checkAns)
+            $("#hard").click(hardOn)
+
+
+
+        </script>    
+    </body>
+</html>       
